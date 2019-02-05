@@ -4,11 +4,14 @@ import Debug from 'debug';
 import express from 'express';
 import logger from 'morgan';
 import path from 'path';
+import cors from 'cors';
 // import favicon from 'serve-favicon';
 
 import index from './routes/index';
 
 const app = express();
+app.use(cors());
+app.options('*', cors());
 const debug = Debug('back:app');
 
 // uncomment after placing your favicon in /public
