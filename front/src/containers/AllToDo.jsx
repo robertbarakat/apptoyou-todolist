@@ -21,7 +21,6 @@ class AllToDo extends Component {
   }
 
   render() {
-    console.log(this.state);
     const { todos } = this.state;
     return (
     <div>
