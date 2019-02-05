@@ -42,7 +42,7 @@ class SignUp extends Component {
             alert(res.error)
           } else {
             alert('utente registrato!');
-            this.props.history.push('/');
+            this.props.history.push('/signin');
           }
         });
     }

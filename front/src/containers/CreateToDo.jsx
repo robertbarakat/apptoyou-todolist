@@ -10,7 +10,7 @@ class CreateToDo extends Component {
     this.state = {
       date: '',
       todo: '',
-      priority: '',
+      priority: '1',
       user_id: '',
     }
     this.updateFields = this.updateFields.bind(this);

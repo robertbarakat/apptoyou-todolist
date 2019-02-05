@@ -6,12 +6,17 @@ class AllToDo extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      todos: []
+      todos: [],
+      empty: '',
     }
   }
 
   componentDidMount() {
+    const { todos } = this.state;
     this.fetchToDo();
+    if (todos.length === 0) {
+      this.setState({ empty: 'Non hai alcuna attività nella tua To Do List'})
+    }
   }
 
   fetchToDo() {
@@ -21,11 +26,11 @@ class AllToDo extends Component {
   }
 
   render() {
-    const { todos } = this.state;
+    const { todos, empty } = this.state;
     return (
     <div>
-      <h2>Lista To Do in agenda</h2>
-      
+      <h3 className="mb-3">Lista To Do in agenda</h3>
+      <p>{empty}</p>
       { todos.map(item => (
         <div key={item.id}>
           <p><strong>Task:</strong> {item.todo}</p>
@@ -35,9 +40,8 @@ class AllToDo extends Component {
         </div>
       ))}
     </div>
-    );
+    )}
   }
-}
 
 function mstp(state) {
   return {

@@ -18,7 +18,7 @@ class SignIn extends Component {
 
   componentDidUpdate() {
     if(this.props.auth) {
-      this.props.history.push('/create-todo');
+      this.props.history.push('/all-todo');
     }
   }
 
