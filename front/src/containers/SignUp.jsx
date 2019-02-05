@@ -3,6 +3,7 @@ import {
   Button, Form, FormGroup, Label, Input,
 } from 'reactstrap';
 import { withRouter } from 'react-router-dom';
+import bcrypt from 'bcryptjs';
 
 class SignUp extends Component {
   constructor(props) {
@@ -25,13 +26,16 @@ class SignUp extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    const { name, surname, email, password } = this.state;
+
+    const hash = bcrypt.hashSync(password, 10);
 
       fetch('http://localhost:5000/api/signup', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(this.state),
+        body: JSON.stringify({name, surname, email, password: hash }),
       }).then(res => res.text())
         .then(res => {
           if (res.error) {

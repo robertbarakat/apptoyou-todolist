@@ -16,10 +16,6 @@ class CreateToDo extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  componentDidUpdate() {
-    console.log(this.state)
-  }
-
   updateFields(event) {
     this.setState({
       [event.target.name]: event.target.value

@@ -1,14 +1,45 @@
 import express from 'express';
+import bcrypt from 'bcrypt';
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
+import jwt from 'jsonwebtoken';
 import connection from './config';
 
 const router = express.Router();
 
-/* GET index page. */
-router.get('/', (req, res) => {
-  res.json({
-    title: 'Express'
-  });
-});
+// Passport setting for authentification based on email and password
+passport.use('local', new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password',
+  session: false,
+}, (email, password, done) => {
+  try {
+    connection.query('SELECT * FROM users WHERE email=?', email, (err, results) => {
+      if (err) {
+        return done(err, false);
+      }
+      const user = results[0]; // means user = row[0] of the db
+      if (!user) { // if user doesn't exist return false
+        return done(null, false);
+      }
+      const authPassword = bcrypt.compareSync(password, user.password);
+      if (!authPassword) { // if password doesn't match return false
+        return done(null, false);
+      }
+      return done(null, user); // if everything matches return user (which equals row[0])
+    });
+  } catch (e) {
+    console.log('err', e);
+  }
+}));
+
+// Jason Web Token
+passport.use(new JwtStrategy({
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: 'secretpwd',
+}, (jwtPayload, cb) => cb(null, jwtPayload)
+));
 
 // GET ALL TASKS BY DATE ASC
 router.get('/api/tasks', (req, res) => {
@@ -35,15 +66,17 @@ router.post('/api/signup', (req, res) => {
 
 // SIGNIN
 router.post('/api/signin', (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  connection.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, password], (err, results) => {
+  passport.authenticate('local', (err, data) => {
     if (err) {
-      res.status(500).send('Username e password non corrispondenti');
-    } else {
-      res.json(results);
+      return res.status(500);
     }
-  });
+    if (!data) {
+      return res.status(400);
+    }
+    const { password, ...user } = data;
+    const token = jwt.sign(user, 'secretpwd');
+    return res.json({ user, token });
+  })(req, res);
 });
 
 // CREATE TO DO

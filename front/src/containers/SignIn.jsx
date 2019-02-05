@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
-import {
-  Button, Form, FormGroup, Label, Input,
-} from 'reactstrap';
+import { Form, FormGroup, Input, Label, Button } from 'reactstrap';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import createSession from '../actions/createSession';
 
 class SignIn extends Component {
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       email: '',
       password: '',
-     }
+    }
     this.updateFields = this.updateFields.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -24,30 +25,29 @@ class SignIn extends Component {
   handleSubmit(event) {
     event.preventDefault();
 
-      fetch('http://localhost:5000/api/signin', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(this.state),
-      }).then(res => res.text())
-        .then(res => {
-          if (res.error) {
-            alert(res.error)
-          } else { 
-            if(res !== []) {
-              alert('Login effettuato con successo!');
-              this.props.history.push('/');
-            } else {
-              alert('Credenziali errate, riprova!');
-            }
-          }
-        });
-    }
+    const { createSession, history } = this.props;
 
-  render() { 
+    fetch('http://localhost:5000/api/signin', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(this.state),
+    }).then(res => {
+      if (res.ok) {
+        return res.json()
+      }
+      else
+        throw new Error(res.statusText);
+    })
+      .then(res => createSession(res));
+      alert('Loggato con successo!');
+      history.push('/create-todo');
+  }
+
+  render() {
     const { email, password } = this.state;
-    return ( 
+    return (
       <div>
         <h3 className="text-center">Compilare i campi e premere Entra!</h3>
         <Form onSubmit={this.handleSubmit}>
@@ -64,8 +64,18 @@ class SignIn extends Component {
           </FormGroup>
         </Form>
       </div>
-     );
+    );
   }
 }
- 
-export default withRouter(SignIn);
+
+function mstp(state) {
+  return {
+    auth: state.auth,
+  }
+}
+
+function mdtp(dispatch) {
+  return bindActionCreators({ createSession }, dispatch)
+}
+
+export default withRouter(connect(mstp, mdtp)(SignIn));
