@@ -5,9 +5,10 @@ import './App.css';
 import HomeScreen from './components/HomeScreen';
 import SignUp from './containers/SignUp';
 import CreateToDo from './containers/CreateToDo';
-import AllToDo from './components/AllToDo';
+import AllToDo from './containers/AllToDo';
 import SignIn from './containers/SignIn';
 import NavBar from './components/NavBar';
+import requireAuth from './hoc/requireAuth';
 
 class App extends Component {
   render() {
@@ -21,8 +22,8 @@ class App extends Component {
               <Route exact path='/' component = {HomeScreen} />
               <Route path='/signup' component = {SignUp} />
               <Route path='/signin' component = {SignIn} />
-              <Route path='/create-todo' component = {CreateToDo} />
-              <Route path='/all-todo' component = {AllToDo} /> 
+              <Route path='/create-todo' component = {requireAuth(CreateToDo)} />
+              <Route path='/all-todo' component = {requireAuth(AllToDo)} /> 
             </Switch>
             </Col>
           </Row>

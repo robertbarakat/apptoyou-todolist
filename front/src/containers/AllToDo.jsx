@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Moment from 'react-moment';
+import { connect } from 'react-redux';
 
 class AllToDo extends Component {
   constructor(props) {
@@ -14,7 +15,7 @@ class AllToDo extends Component {
   }
 
   fetchToDo() {
-    fetch('http://localhost:5000/api/tasks')
+    fetch(`http://localhost:5000/api/tasks/${this.props.user.id_user}`)
       .then(res => res.json())
       .then(data => this.setState({ todos: data }));
   }
@@ -28,9 +29,9 @@ class AllToDo extends Component {
       
       { todos.map(item => (
         <div key={item.id}>
-          <p>{item.todo}</p>
-          <p>Priorità: {item.priority}</p>
-          <p>Scadenza: <Moment format="DD/MM/YYYY">{item.date}</Moment></p>
+          <p><strong>Task:</strong> {item.todo}</p>
+          <p><strong>Priorità:</strong> {item.priority}</p>
+          <p><strong>Scadenza:</strong> <Moment format="DD/MM/YYYY">{item.date}</Moment></p>
         <hr />
         </div>
       ))}
@@ -39,4 +40,10 @@ class AllToDo extends Component {
   }
 }
 
-export default AllToDo;
+function mstp(state) {
+  return {
+    user: state.userReducer,
+  }
+}
+
+export default connect(mstp)(AllToDo);

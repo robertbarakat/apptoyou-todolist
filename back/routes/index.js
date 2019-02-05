@@ -41,9 +41,10 @@ passport.use(new JwtStrategy({
 }, (jwtPayload, cb) => cb(null, jwtPayload)
 ));
 
-// GET ALL TASKS BY DATE ASC
-router.get('/api/tasks', (req, res) => {
-  connection.query('SELECT id, date, todo, priority, status, name, surname, email, password FROM tasks INNER JOIN users ON tasks.user_id = users.id_user ORDER BY date ASC', (err, results) => {
+// GET ALL TASKS BY DATE ASC ACCORDING TO USER ID
+router.get('/api/tasks/:id', (req, res) => {
+  const idUser = req.params.id;
+  connection.query('SELECT id, date, todo, priority, status, name, surname FROM tasks INNER JOIN users ON tasks.user_id = users.id_user WHERE users.id_user=? ORDER BY date ASC', idUser, (err, results) => {
     if (err) {
       res.status(500).send('Errore nel recupero dei dati');
     } else {

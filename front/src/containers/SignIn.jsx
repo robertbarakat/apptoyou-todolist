@@ -16,6 +16,12 @@ class SignIn extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  componentDidUpdate() {
+    if(this.props.auth) {
+      this.props.history.push('/create-todo');
+    }
+  }
+
   updateFields(event) {
     this.setState({
       [event.target.name]: event.target.value
@@ -25,7 +31,7 @@ class SignIn extends Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const { createSession, history } = this.props;
+    const { createSession } = this.props;
 
     fetch('http://localhost:5000/api/signin', {
       method: "POST",
@@ -42,7 +48,6 @@ class SignIn extends Component {
     })
       .then(res => createSession(res));
       alert('Loggato con successo!');
-      history.push('/create-todo');
   }
 
   render() {
@@ -70,7 +75,7 @@ class SignIn extends Component {
 
 function mstp(state) {
   return {
-    auth: state.auth,
+    auth: state.authReducer,
   }
 }
 

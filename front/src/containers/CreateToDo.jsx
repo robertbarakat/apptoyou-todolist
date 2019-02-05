@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   Button, Form, FormGroup, Label, Input,
 } from 'reactstrap';
+import { connect } from 'react-redux';
 
 class CreateToDo extends Component {
   constructor(props) {
@@ -10,10 +11,15 @@ class CreateToDo extends Component {
       date: '',
       todo: '',
       priority: '',
-      user_id: 1,
+      user_id: '',
     }
     this.updateFields = this.updateFields.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount() {
+    const { user } = this.props;
+    this.setState({ user_id: user.id_user})
   }
 
   updateFields(event) {
@@ -24,6 +30,7 @@ class CreateToDo extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    const { history } = this.props;
 
     fetch('http://localhost:5000/api/todo/create', {
       method: "POST",
@@ -37,7 +44,7 @@ class CreateToDo extends Component {
           alert(res.error)
         } else {
           alert('To Do Creato!');
-          this.props.history.push('/');
+          history.push('/all-todo');
         }
       });
   }
@@ -73,4 +80,10 @@ class CreateToDo extends Component {
   }
 }
 
-export default CreateToDo;
+function mstp(state) {
+  return {
+    user: state.userReducer,
+  }
+}
+
+export default connect(mstp)(CreateToDo);
